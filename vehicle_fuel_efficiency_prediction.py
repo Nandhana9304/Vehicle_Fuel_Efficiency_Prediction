@@ -47,8 +47,15 @@ df = pd.DataFrame({
 })
 
 if st.button("Predict MPG"):
-  for col in encoder:
-    df[col] = encoder[col].transform(df[col])
+for col in encoder:
 
-  prediction = model.predict(df)
-  st.success(f"Predicted Fuel Efficiency (MPG): {prediction[0]:}")
+    # Handle unseen labels safely
+    if df[col][0] not in encoder[col].classes_:
+        df[col] = encoder[col].transform([encoder[col].classes_[0]])
+    else:
+        df[col] = encoder[col].transform(df[col])
+
+prediction = model.predict(df)
+
+st.success(f"Predicted Fuel Efficiency (MPG): {prediction[0]:.2f}")
+
